@@ -1,5 +1,5 @@
 {
-  "name": "haste",
+  "name": "hastebin",
   "version": "0.1.0",
   "private": true,
   "description": "Private Pastebin Server",
