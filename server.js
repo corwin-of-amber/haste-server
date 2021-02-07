@@ -1,7 +1,6 @@
 var http = require('http');
 var fs = require('fs');
 
-var uglify = require('uglify-js');
 var winston = require('winston');
 var connect = require('connect');
 var route = require('connect-route');
@@ -52,21 +51,6 @@ if (process.env.REDISTOGO_URL && config.storage.type === 'redis') {
 else {
   Store = require('./lib/document_stores/' + config.storage.type);
   preferredStore = new Store(config.storage);
-}
-
-// Compress the static javascript assets
-if (config.recompressStaticAssets) {
-  var list = fs.readdirSync('./static');
-  for (var j = 0; j < list.length; j++) {
-    var item = list[j];
-    if ((item.indexOf('.js') === item.length - 3) && (item.indexOf('.min.js') === -1)) {
-      var dest = item.substring(0, item.length - 3) + '.min' + item.substring(item.length - 3);
-      var orig_code = fs.readFileSync('./static/' + item, 'utf8');
-
-      fs.writeFileSync('./static/' + dest, uglify.minify(orig_code).code, 'utf8');
-      winston.info('compressed ' + item + ' into ' + dest);
-    }
-  }
 }
 
 // Send the static documents into the preferred store, skipping expirations

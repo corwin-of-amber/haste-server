@@ -91,6 +91,7 @@ textarea {
 	height: 37px;
 	display: inline-block;
 	position: relative;
+	outline: none;
 }
 
 #box2 .link embed {
