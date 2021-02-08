@@ -55,7 +55,7 @@ textarea {
 
 /* key */
 
-#key {
+#key, .hastebin--embedded {
 	position: fixed;
 	top: 0px;
 	right: 0px;

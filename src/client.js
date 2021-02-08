@@ -138,14 +138,16 @@ class HasteUI {
    * Embeds the toolbar in an existing document.
    */
   embed(container = document.body) {
-    $('<div>').addClass('haste--embedded').html(`
-      <div id="haste--tools">
-        <div class="save function" title="Save [Ctrl + S]"></div>
-        <div class="new function" title="New [Ctrl + Space]"></div>
-        <div class="duplicate function" title="Duplicate [Ctrl + D]"></div>
-        <div class="raw function" title="Raw [Ctrl + Shift + R]"></div>
-      </div>`)
-    .appendTo(container);
+    return $('<div>').addClass('hastebin--embedded').html(`
+		  <div id="pointer" style="display:none;"></div>
+			<div id="box1"> <a href="/about.md" class="logo"></a> </div>
+			<div id="box2"> <button class="save function button-picture">Save</button>
+				              <button class="new function button-picture">New</button>
+				              <button class="duplicate function button-picture">Duplicate & Edit</button>
+				              <button class="raw function button-picture">Just Text</button>
+				              <button class="twitter function button-picture">Twitter</button> </div>
+			<div id="box3" style="display:none;"> <div class="label"></div> <div class="shortcut"></div> </div>`)
+    .appendTo(container || $(document.body));
   }
 }
 
@@ -276,6 +278,11 @@ haste.prototype.configureButtons = function(container) {
 haste.prototype.configureShortcuts = function() {
   this.ui.configureShortcuts();
 };
+
+// embed the UI in the current document
+haste.prototype.embed = function(container) {
+  this.configureButtons(this.ui.embed(container));
+}
 
 // represents a single document
 var haste_document = function(config) {
