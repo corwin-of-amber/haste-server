@@ -1,5 +1,5 @@
 {
-  "name": "hastebin",
+  "name": "@corwin.amber/hastebin",
   "version": "0.1.0",
   "private": true,
   "description": "Private Pastebin Server",
@@ -13,6 +13,10 @@
     "url": "http://seejohncode.com/"
   },
   "main": "haste",
+  "exports": {
+    "./client": "./src/client.js",
+    "./client/application.css": "./static/application.css"
+  },
   "dependencies": {
     "busboy": "0.2.4",
     "connect": "^3.7.0",

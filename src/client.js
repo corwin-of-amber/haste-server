@@ -25,14 +25,17 @@ class HasteUI {
     if (key !== this._key) {
       this.setTitle(key);
       if (isHTTP)
-        window.history.pushState(null,
-          this.mkTitle(key), `${this.config.baseURL}/${key || ''}`);
+        window.history.pushState(null, this.mkTitle(key), this.mkURL(key));
     }
     this._key = key;
   }
   
   setTitle(ext) {
     document.title = this.mkTitle(ext);	
+  }
+
+  mkURL(key) {
+    return `${this.config.baseURL}/${key || ''}`;
   }
 
   mkTitle(ext) {
@@ -127,10 +130,16 @@ class HasteUI {
   /** show the full key */
   fullKey() { this.configureKey(['new', 'duplicate', 'twitter', 'raw']); }
 
+  /** show ongoing operation in key */
+  progressKey(o) {
+    this.configureKey([]);
+    this.configureKey(o, 'ongoing');
+  }
+
   /** set the enabled buttons */
-  configureKey(enable) {
+  configureKey(enable, className='enabled') {
     for (let [k, v] of Object.entries(this.buttons || {})) {
-      v.$where.toggleClass('enabled', k in enable);
+      v.$where.toggleClass(className, k in enable);
     }
   }
 
@@ -184,11 +193,11 @@ class Tooltip {
 
 
 // setup a new, blank document
-haste.prototype.newDocument = function(hideHistory) {
+haste.prototype.newDocument = function() {
   this.doc = new haste_document(this.config);
   this.ui.enterDocument(undefined);
   this.ui.lightKey();
-  this.view.set('', 'w');  /** @todo hideHistory? */
+  this.view.set('', 'w');
 };
 
 // load an existing document
@@ -197,9 +206,7 @@ haste.prototype.loadDocument = function(key) {
   _this.doc = new haste_document(this.config);
   _this.doc.load(key, function(ret) {
     if (ret) {
-      _this.ui.enterDocument(ret.key);
-      _this.ui.fullKey();
-            _this.view.set(ret.value, 'r');
+      _this.enterDocument(ret);
     } else {
       _this.newDocument();
     }
@@ -223,17 +230,32 @@ haste.prototype.duplicateDocument = function() {
 // save and lock the current document
 haste.prototype.lockDocument = function(cb) {
   var _this = this;
-  this.doc.save(this.view.get(), function(err, res) {
+  this.ui.progressKey(['save']);
+  this.doc.save(this.view.get(), function(err, ret) {
+    _this.ui.progressKey([]);
     if (err) {
       _this.showMessage(err.message, 'error');
     }
-    else if (res) {
-      /** @todo res already contains document -- just update view */
-      _this.loadDocument(res.key);
+    else if (ret) {
+      _this.enterDocument(ret);
     }
-    if (cb) cb(err, res);
+    if (cb) cb(err, ret);
   });
 };
+
+haste.prototype.enterDocument = function(doc) {
+  /** @todo language and stuff */
+  this.ui.enterDocument(doc.key);
+  this.ui.fullKey();
+  this.view.set(doc.value, 'r');
+};
+
+// just unlock the document, without updating the view
+haste.prototype.unlockDocument = function(cb) {
+  this.ui.enterDocument(undefined);
+  this.ui.lightKey();
+  if (cb) cb();
+}
 
 // Low-level api to manipulate documents
 haste.prototype.getDocument = function(key, cb) {
@@ -330,7 +352,7 @@ haste_document.prototype.save = function(data, callback) {
     contentType: 'application/json; charset=utf-8',
     success: function(res) {
       _this.locked = true;
-      _this.key = key;
+      _this.key = res.key;
       var value = _this.format(data),
           lineCount = data.split('\n').length;
       callback(null, {key: res.key, lineCount, ...value});

@@ -14,7 +14,7 @@ class HasteView {
     tabKeyBehavior(this.$textarea);
 	}
 
-	set(text, mode) {
+	set(text, mode, info={}) {
 		if (mode == 'w') {
 			this.$box.hide();
 			this.$textarea.val(text).show('fast', function() {
@@ -26,6 +26,7 @@ class HasteView {
 			this.$textarea.val('').hide();
 			this.$box.show();
 		}
+    /** @todo language highlighting, line numbers */
 	}
 
 	get() {
