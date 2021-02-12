@@ -22,6 +22,7 @@
     "connect": "^3.7.0",
     "connect-ratelimit": "0.0.7",
     "connect-route": "0.1.5",
+    "cors": "^2.8.5",
     "highlight.js": "^10.5.0",
     "pg": "^8.0.0",
     "redis": "0.8.1",

@@ -38,6 +38,8 @@
 
   "documents": {
     "about": "./about.md"
-  }
+  },
+
+  "cors": true
 
 }
