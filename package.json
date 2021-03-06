@@ -1,12 +1,15 @@
 {
   "name": "@corwin.amber/hastebin",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Private Pastebin Server",
+  "version": "0.1.1",
+  "description": "Your Own Pastebin Clone (Server+Client)",
   "keywords": [
     "paste",
     "pastebin"
   ],
+  "repository": {
+    "type": "git",
+    "url": "github:corwin-of-amber/hastebin"
+  },
   "author": {
     "name": "John Crepezzi",
     "email": "john.crepezzi@gmail.com",

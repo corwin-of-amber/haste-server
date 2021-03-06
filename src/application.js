@@ -6,32 +6,52 @@ import { haste } from './client';
  * Uses a `<textarea>` for editing, a `<div>` for read-only display.
  */
 class HasteView {
-	constructor() {
-		this.$textarea = $('textarea');
-		this.$box = $('#box');
-		this.$code = $('#box code');
+  constructor() {
+    this.$textarea = $('textarea');
+    this.$box = $('#box');
+    this.$code = $('#box code');
     this.$linenos = $('#linenos');
     tabKeyBehavior(this.$textarea);
-	}
+  }
 
-	set(text, mode, info={}) {
-		if (mode == 'w') {
-			this.$box.hide();
-			this.$textarea.val(text).show('fast', function() {
-				this.focus();
-			});	
-		}
-		else {
-			this.$code.html(text);
-			this.$textarea.val('').hide();
-			this.$box.show();
-		}
-    /** @todo language highlighting, line numbers */
-	}
+  set(text, mode, info={}) {
+    if (mode == 'w') {
+      this.$box.hide();
+      this.$textarea.val(text).show('fast', function() {
+        this.focus();
+      });
+      this.removeLineNumbers();
+    }
+    else {
+      this.$code.html(text);
+      this.$textarea.val('').hide();
+      this.$box.show();
+      this.addLineNumbers(info.lineCount);
+    }
+    /** @todo language highlighting */
+  }
 
-	get() {
-    	return this.$textarea.val();
-	}
+  get() {
+    return this.$textarea.val();
+  }
+
+  /**
+   * Create line numbers 1..`lineCount`.
+   */
+  addLineNumbers(lineCount) {
+    var h = '';
+    for (var i = 0; i < lineCount; i++) {
+      h += `${i + 1}<br/>`;
+    }
+    this.$linenos.html(h);
+  };
+  
+  /**
+   * Remove the line numbers.
+   */
+  removeLineNumbers() {
+    this.$linenos.html('&gt;');
+  };  
 }
 
 ///// Tab behavior in the textarea - 2 spaces per tab
@@ -70,11 +90,11 @@ function tabKeyBehavior($textarea, indent = '  ') {
 
 // after page is loaded
 $(function() {
-	var app = new haste('hastebin', { twitter: true });
-	app.view = new HasteView();
-	app.configureButtons();
-	app.configureShortcuts();
-	
+  var app = new haste('hastebin', { twitter: true });
+  app.view = new HasteView();
+  app.configureButtons();
+  app.configureShortcuts();
+  
   // Handle pop from history
   var handlePop = function(evt) {
     var path = evt.target.location.pathname;
@@ -90,41 +110,13 @@ $(function() {
     };
   }, 1000);
 
-	if (window.location.protocol.match(/^https?:/)) {
+  if (window.location.protocol.match(/^https?:/)) {
     handlePop({ target: window });
-	}
-	else {
-		app.config.baseURL =  'http://localhost:8080';
-		app.newDocument(true);
-	}
+  }
+  else {
+    app.config.baseURL =  'http://localhost:8080';
+    app.newDocument(true);
+  }
 
-	window.app = app;
+  window.app = app;
 });
-
-/*
-hljs.initHighlightingOnLoad();
-
-function main() {
-  var app = null;
-  // Handle pops
-  var handlePop = function(evt) {
-    var path = evt.target.location.pathname;
-    if (path === '/') { app.newDocument(true); }
-    else { app.loadDocument(path.substring(1, path.length)); }
-  };
-  // Set up the pop state to handle loads, skipping the first load
-  // to make chrome behave like others:
-  // http://code.google.com/p/chromium/issues/detail?id=63040
-  setTimeout(function() {
-    window.onpopstate = function(evt) {
-      try { handlePop(evt); } catch(err) { /* not loaded yet * }
-    };
-  }, 1000);
-  // Construct app and load initial path
-  $(function() {
-    app = new haste('hastebin', { twitter: true });
-    handlePop({ target: window });
-  });  
-}
-
-main();*/

@@ -197,7 +197,7 @@ haste.prototype.newDocument = function() {
   this.doc = new haste_document(this.config);
   this.ui.enterDocument(undefined);
   this.ui.lightKey();
-  this.view.set('', 'w');
+  this.view.set('', 'w', this.doc);
 };
 
 // load an existing document
@@ -247,11 +247,12 @@ haste.prototype.enterDocument = function(doc) {
   /** @todo language and stuff */
   this.ui.enterDocument(doc.key);
   this.ui.fullKey();
-  this.view.set(doc.value, 'r');
+  this.view.set(doc.value, 'r', doc);
 };
 
 // just unlock the document, without updating the view
 haste.prototype.unlockDocument = function(cb) {
+  this.doc.locked = false;
   this.ui.enterDocument(undefined);
   this.ui.lightKey();
   if (cb) cb();
